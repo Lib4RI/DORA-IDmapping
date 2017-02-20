@@ -65,10 +65,10 @@ CRONDATEPARSESTRING='45 23 %_d %_m *' # set when the cronjob should be started; 
 
 if [ "$CRONDAY" = 'today' ]
 then
-  CRONMIN="`echo $CRONDATEPARSESTRING | $SED 's/^[ ]*\([0-9]\+\).*$/\1/'`"
-  CRONHR="`echo $CRONDATEPARSESTRING | $SED 's/^[ ]*[0-9]\+[ ]\+\([0-9]\+\).*$/\1/'`"
-  NOWHR="`$DATE +'%H'`"
-  NOWMIN="`$DATE +'%M'`"
+  CRONMIN="`echo $CRONDATEPARSESTRING | $SED 's/^[ ]*\([0-9]\+\).*$/\1/; s/^[0]*\(.*\)/\1/'`"
+  CRONHR="`echo $CRONDATEPARSESTRING | $SED 's/^[ ]*[0-9]\+[ ]\+\([0-9]\+\).*$/\1/; s/^[0]*\(.*\)/\1/'`"
+  NOWHR="`$DATE +'%H' | $SED 's/^[0]*\(.*\)/\1/'`"
+  NOWMIN="`$DATE +'%M' | $SED 's/^[0]*\(.*\)/\1/'`"
   NOWMIN=$(($NOWMIN+1))
   if [ $CRONHR -le $NOWHR ] && [ $CRONMIN -le $NOWMIN ]
   then
