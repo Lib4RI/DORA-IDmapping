@@ -30,14 +30,14 @@ N.B.: _This toolchain needs to be patched manually if you wish to use it for ent
 cd /var/www/html/sites/<institute>/files/
 if [ -z "$SSH_AUTH_SOCK" ]; then eval $(ssh-agent -s); fi
 ssh-add ~/.ssh/<your_id_rsa_github_key>
-/usr/bin/sudo -u apache SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git    ./<uuid>/
+/usr/bin/sudo SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git ./<uuid>/
    ```
    Note that you could clone the repository to any destination; the install script will copy the necessary files to the necessary destination. Watch out for filesystem permissions!
 
-3. Enter the `<uuid>`-directory, change the file permissions of the install script and install
+3. Enter the `<uuid>`-directory, change file ownerships and install
    ```
 cd <uuid>
-/usr/bin/sudo -u apache /bin/chmod u+x installidmapping.sh
+/usr/bin/sudo /bin/chown -R apache.apache {*,.g*}
 /usr/bin/sudo -u apache ./installidmapping.sh -i <institute> -u <uuid> -n <InstituteName> -p <port>
    ```
    Here, `<InstituteName>` refers to the display name of `<institute>` and `<port>` to the port through which solr can be accessed on your server. Both parameters are optional and default to "DORA Institute" and "8080", respectively.
