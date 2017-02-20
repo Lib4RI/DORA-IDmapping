@@ -25,57 +25,63 @@ N.B.: _This toolchain needs to be patched manually if you wish to use it for ent
 
 1. Decide on a uuid (you may generate a random one using `/usr/bin/uuidgen -r`) and a file path (these installation instructions assume `/var/www/html/sites/<institute>/files/`) and have your IT department restrict access to `$base_url/sites/<institute>/files/<uuid>` (allow only your personal workstations and those servers that need the exported information). Here, `$base_url` refers to the url from which your subsite is accessed from the outside (say, `https://<islandora.somewhere.com>/<institute>`).
 
-#. Go to `/var/www/html/sites/<institute>/files/` and clone this repository into the `<uuid>` folder (you will need to let github know your ssh-key<font size="-1"><sup><a name="dagger_caller"></a>[&dagger;](#dagger_callee)</sup></font>!):   
-```
+2. Go to `/var/www/html/sites/<institute>/files/` and clone this repository into the `<uuid>` folder (you will need to let github know your ssh-key<font size="-1"><sup><a name="dagger_caller"></a>[&dagger;](#dagger_callee)</sup></font>!):   
+   ```
 cd /var/www/html/sites/<institute>/files/
 if [ -z "$SSH_AUTH_SOCK" ]; then eval $(ssh-agent -s); fi
 ssh-add ~/.ssh/<your_id_rsa_github_key>
-/usr/bin/sudo -u apache SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git ./<uuid>/
-```
-Note that you could clone the repository to any destination; the install script will copy the necessary files to the necessary destination. Watch out for filesystem permissions!
+/usr/bin/sudo -u apache SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git    ./<uuid>/
+   ```
+   Note that you could clone the repository to any destination; the install script will copy the necessary files to the necessary destination. Watch out for filesystem permissions!
 
-#. Enter the `<uuid>`-directory, change the file permissions of the install script and install
-```
+3. Enter the `<uuid>`-directory, change the file permissions of the install script and install
+   ```
 cd <uuid>
 /usr/bin/sudo -u apache /bin/chmod u+x installidmapping.sh
 /usr/bin/sudo -u apache ./installidmapping.sh -i <institute> -u <uuid> -n <InstituteName> -p <port>
-```
-Here, `<InstituteName>` refers to the display name of `<institute>` and `<port>` to the port through which solr can be accessed on your server. Both parameters are optional and default to "DORA Institute" and "8080", respectively.
+   ```
+   Here, `<InstituteName>` refers to the display name of `<institute>` and `<port>` to the port through which solr can be accessed on your server. Both parameters are optional and default to "DORA Institute" and "8080", respectively.
 
-    The above command will create all the necessary files in `<uuid>`; the generated files all have the suffix `-<institute>`, with the exception of `idmapping.py` (note that those files are copies of the unsuffixed files, but including the necessary modifications to reflect the choices of `<institute>`, `<uuid>`, etc...; be careful that this might not work for you --- the install script is intended to work on *our* installation).
+   The above command will create all the necessary files in `<uuid>`; the generated files all have the suffix `-<institute>`, with the exception of `idmapping.py` (note that those files are copies of the unsuffixed files, but including the necessary modifications to reflect the choices of `<institute>`, `<uuid>`, etc...; be careful that this might not work for you --- the install script is intended to work on *our* installation).
 
-#. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules/components` and import the component `component_to_set_cronjob_for_author_idmapping_export-<institute>.rulecomponent`.
+4. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules/components` and import the component `component_to_set_cronjob_for_author_idmapping_export-<institute>.rulecomponent`.
 
-#. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules` and import the rule `rule_to_set_cronjob_for_author_idmapping_export-<institute>.rule`.
+5. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules` and import the rule `rule_to_set_cronjob_for_author_idmapping_export-<institute>.rule`.
 
-#. Test the installation as follows:
-      #. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
-```
+6. Test the installation as follows:
+
+   1. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
+      ```
 ls -laFh
-```
-         and verify that all files are owned by user `apache` and that `idmapping.py` and `runidmapping-<institute>.sh` are user-executable.
-      1. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
-```
+      ```
+      and verify that all files are owned by user `apache` and that `idmapping.py` and `runidmapping-<institute>.sh` are user-executable.
+
+   2. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
+      ```
 /usr/bin/sudo -u apache /usr/bin/crontab -l
 /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -a
 /usr/bin/sudo -u apache /usr/bin/crontab -l
-```
-         You should see an addition line in the crontab that executes `runidmapping-<institute>.sh` twice.
-      #. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
-```
+      ```
+      You should see an addition line in the crontab that executes `runidmapping-<institute>.sh` twice.
+
+   3. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
+      ```
 /usr/bin/sudo -u apache /usr/bin/crontab -l
 /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -c
 /usr/bin/sudo -u apache /usr/bin/crontab -l
-```
-         The addition line in the crontab should have disappeared.
-      #. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
-```
+      ```
+      The addition line in the crontab should have disappeared.
+
+   4. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
+      ```
 /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b
 ls
-```
-         You should see the two files `<institute>-authors.xml` and `<institute>-authors.xml.<timestamp>`, as well as the log-file `idmapping.log.<timestamp>`, where `<timestamp>` is the UTC timestamp of execution (in the format "`YYYYmmddTHHMMSSZ`"; note that the timestamps of the two files will differ by a few seconds).
-      #. Add an author-object and check if a line in the crontab that executes `runidmapping-<institute>.sh` twice has been created (use `/usr/bin/sudo -u apache /usr/bin/crontab -l`) --- you can delete apache's crontab with `/usr/bin/sudo -u apache /usr/bin/crontab -r` and re-do the test for other scenarios like modifying or deleting an author-object.
-      #. Trigger the creation of the abovementioned line in crontab (add, modify or delete an author-object, or run `/var/www/html/sites/<institute>/files/<uuid>/runidmapping-<institute>.sh -v -b -a`) and wait for 11:45pm to see if the file `/var/www/html/sites/<institute>/files/<uuid>/<institute>-authors.xml` gets re-created.
+      ```
+      You should see the two files `<institute>-authors.xml` and `<institute>-authors.xml.<timestamp>`, as well as the log-file `idmapping.log.<timestamp>`, where `<timestamp>` is the UTC timestamp of execution (in the format "`YYYYmmddTHHMMSSZ`"; note that the timestamps of the two files will differ by a few seconds).
+
+   5. Add an author-object and check if a line in the crontab that executes `runidmapping-<institute>.sh` twice has been created (use `/usr/bin/sudo -u apache /usr/bin/crontab -l`) --- you can delete apache's crontab with `/usr/bin/sudo -u apache /usr/bin/crontab -r` and re-do the test for other scenarios like modifying or deleting an author-object.
+
+   6. Trigger the creation of the abovementioned line in crontab (add, modify or delete an author-object, or run `/var/www/html/sites/<institute>/files/<uuid>/runidmapping-<institute>.sh -v -b -a`) and wait for 11:45pm to see if the file `/var/www/html/sites/<institute>/files/<uuid>/<institute>-authors.xml` gets re-created.
 
 
 <font size="-1"><sup><a name="dagger_callee"></a>[&dagger;](#dagger_caller)</sup>You can generate a new ssh-key by executing, e.g., `ssh-keygen -t rsa -b 4096 "<your-github-username>@users.noreply.github.com -f ~/.ssh/id_rsa_github`. Afterwards, make sure to upload the public key file (`~/.ssh/id_rsa_github.pub`) to [https://github.com/settings/keys](https://github.com/settings/keys) (log in first).</font>
