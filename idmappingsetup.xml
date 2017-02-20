@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf8"?>
+<IDMAPPINGSETUP>
+  <!--
+    REMARKS REGARDING THE TAGS:
+    - Each of the following tags is optional and defaults to (lowercase tags refer to the current setting):
+      - <INSTITUTE>:       institute
+      - <NAMESPACE>:       <institute>-authors
+      - <UUID>:            00000000-0000-0000-0000-000000000000
+      - <SUBSITE>:         <institute>
+      - <PATH>:            /var/www/html/sites/<subsite>/files/<uuid> (if <subsite> is blank, "default" will be substituted in the path)
+      - <FILENAME>:        <namespace>.xml
+      - <SRCIDKEY>:        DORAid
+      - <SOLRFIELDSRCID>:  PID
+      - <DESIDKEY>:        SAPid
+      - <SOLRFIELDDESID>:  MADS_u1_ms
+      - <SOLRBASEURL>:     http://localhost:8080/solr/collection1/select
+      - <ROOTKEY>:         <namespace>
+      - <CONTAINERKEY>:    IDmapping
+
+    EXAMPLES:
+    - <INSTITUTE>marsuniversity</INSTITUTE>
+      <UUID>45cf5181-b077-4e94-b021-e2ccf39508a0</UUID>
+    - <INSTITUTE>institute</INSTITUTE>
+      <SUBSITE></SUBSITE>
+      <NAMESPACE>people</NAMESPACE>
+      <FILENAME>out.xml</FILENAME>
+  -->
+  <INSTITUTE>institute</INSTITUTE>
+  <NAMESPACE>institute-authors</NAMESPACE>
+  <UUID>00000000-0000-0000-0000-000000000000</UUID>
+  <SUBSITE>institute</SUBSITE>
+  <PATH>/var/www/html/sites/institute/files/00000000-0000-0000-0000-000000000000</PATH>
+  <FILENAME>institute-authors.xml</FILENAME>
+  <SRCIDKEY>DORAid</SRCIDKEY>
+  <SOLRFIELDSRCID>PID</SOLRFIELDSRCID>
+  <DESIDKEY>SAPid</DESIDKEY>
+  <SOLRFIELDDESID>MADS_u1_ms</SOLRFIELDDESID>
+  <SOLRBASEURL>http://localhost:8080/solr/collection1/select</SOLRBASEURL>
+  <ROOTKEY>institute-authors</ROOTKEY>
+  <CONTAINERKEY>IDmapping</CONTAINERKEY>
+</IDMAPPINGSETUP>

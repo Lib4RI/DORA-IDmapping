@@ -1,0 +1,19 @@
+{ "rules_rule_to_set_cronjob_for_author_idmapping_export" : {
+    "LABEL" : "Rule to set cronjob for author IDmapping export",
+    "PLUGIN" : "reaction rule",
+    "OWNER" : "rules",
+    "REQUIRES" : [ "php", "rules", "islandora" ],
+    "ON" : {
+      "islandora_object_ingested" : [],
+      "islandora_object_modified" : [],
+      "islandora_datastream_modified" : [],
+      "islandora_object_purged" : []
+    },
+    "IF" : [
+      { "php_eval" : { "code" : "\/*** BEGIN MODIFIABLE PART ***\/\n$namespace = \u0022institute-authors\u0022;\n\/*** END MODIFIABLE PART ***\/\n\n$pid = (isset($object-\u003Eid) ? $object-\u003Eid : $object);\nif (strpos($pid, $namespace . \u0022:\u0022) !== 0) { \/\/ return false if not in the required namespace\n  return false;\n}\nif (!isset($object-\u003Eid)) { \/\/ bail out if object was purged and all we know is its pid...\n  return true;\n}\nreturn in_array(\u0027islandora:personCModel\u0027, $object-\u003Emodels) and in_array(\u0027islandora:entityCModel\u0027, $object-\u003Emodels); \/\/ also check if the object is of the correct cmodel" } }
+    ],
+    "DO" : [
+      { "component_rules_component_to_set_cronjob_for_author_idmapping_export" : { "triggering_pid" : "\u003C?php echo (isset($object-\u003Eid) ? $object-\u003Eid : $object); ?\u003E" } }
+    ]
+  }
+}
