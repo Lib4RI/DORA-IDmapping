@@ -25,20 +25,20 @@ N.B.: _This toolchain needs to be patched manually if you wish to use it for ent
 
 1. Decide on a uuid (you may generate a random one using `/usr/bin/uuidgen -r`) and a file path (these installation instructions assume `/var/www/html/sites/<institute>/files/`) and have your IT department restrict access to `$base_url/sites/<institute>/files/<uuid>` (allow only your personal workstations and those servers that need the exported information). Here, `$base_url` refers to the url from which your subsite is accessed from the outside (say, `https://<islandora.somewhere.com>/<institute>`).
 
-2. Go to `/var/www/html/sites/<institute>/files/` and clone this repository into the `<uuid>` folder (you will need to let github know your ssh-key<font size="-1"><sup><a name="dagger_caller"></a>[&dagger;](#dagger_callee)</sup></font>!):   
+2. Go to `/var/www/html/sites/<institute>/files/` and clone this repository into the `<uuid>` folder (you will need to let github know your ssh-key<font size="-1"><sup><a name="dagger_caller"></a>[&dagger;](#dagger_callee)</sup></font>!):
    ```
-cd /var/www/html/sites/<institute>/files/
-if [ -z "$SSH_AUTH_SOCK" ]; then eval $(ssh-agent -s); fi
-ssh-add ~/.ssh/<your_id_rsa_github_key>
-/usr/bin/sudo SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git ./<uuid>/
+   cd /var/www/html/sites/<institute>/files/
+   if [ -z "$SSH_AUTH_SOCK" ]; then eval $(ssh-agent -s); fi
+   ssh-add ~/.ssh/<your_id_rsa_github_key>
+   /usr/bin/sudo SSH_AUTH_SOCK=$SSH_AUTH_SOCK /usr/bin/git clone git@github.com:/path/to/this/repo/idmapping.git ./<uuid>/
    ```
    Note that you could clone the repository to any destination; the install script will copy the necessary files to the necessary destination. Watch out for filesystem permissions!
 
 3. Enter the `<uuid>`-directory, change file ownerships and install
    ```
-cd <uuid>
-/usr/bin/sudo /bin/chown -R apache.apache {*,.g*}
-/usr/bin/sudo -u apache ./installidmapping.sh -i <institute> -u <uuid> -n <InstituteName> -p <port>
+   cd <uuid>
+   /usr/bin/sudo /bin/chown -R apache.apache {*,.g*}
+   /usr/bin/sudo -u apache ./installidmapping.sh -i <institute> -u <uuid> -n <InstituteName> -p <port>
    ```
    Here, `<InstituteName>` refers to the display name of `<institute>` and `<port>` to the port through which solr can be accessed on your server. Both parameters are optional and default to "DORA Institute" and "8080", respectively.
 
@@ -52,30 +52,30 @@ cd <uuid>
 
    1. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
       ```
-ls -laFh
+      ls -laFh
       ```
       and verify that all files are owned by user `apache` and that `idmapping.py` and `runidmapping-<institute>.sh` are user-executable.
 
    2. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
       ```
-/usr/bin/sudo -u apache /usr/bin/crontab -l
-/usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -a
-/usr/bin/sudo -u apache /usr/bin/crontab -l
+      /usr/bin/sudo -u apache /usr/bin/crontab -l
+      /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -a
+      /usr/bin/sudo -u apache /usr/bin/crontab -l
       ```
       You should see an addition line in the crontab that executes `runidmapping-<institute>.sh` twice.
 
    3. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
       ```
-/usr/bin/sudo -u apache /usr/bin/crontab -l
-/usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -c
-/usr/bin/sudo -u apache /usr/bin/crontab -l
+      /usr/bin/sudo -u apache /usr/bin/crontab -l
+      /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b -c
+      /usr/bin/sudo -u apache /usr/bin/crontab -l
       ```
       The addition line in the crontab should have disappeared.
 
    4. Inside `/var/www/html/sites/<institute>/files/<uuid>` execute
       ```
-/usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b
-ls
+      /usr/bin/sudo -u apache ./runidmapping-<institute>.sh -v -b
+      ls
       ```
       You should see the two files `<institute>-authors.xml` and `<institute>-authors.xml.<timestamp>`, as well as the log-file `idmapping.log.<timestamp>`, where `<timestamp>` is the UTC timestamp of execution (in the format "`YYYYmmddTHHMMSSZ`"; note that the timestamps of the two files will differ by a few seconds).
 
