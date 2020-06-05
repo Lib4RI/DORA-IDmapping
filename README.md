@@ -46,6 +46,9 @@ N.B.: _This toolchain needs to be patched manually if you wish to use it for ent
 
 4. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules/components` and import the component `component_to_set_cronjob_for_author_idmapping_export-<institute>.rulecomponent`.
 
+   **Note** (2020-June-05/FH): Should you get e-mail notifications finally that the `*.sh` scripts cannot be found resp. that the path is not valid, then you should return the installation this step and consider to replace `$_SERVER['DOCUMENT_ROOT']` with the actual path (for example `/var/www/html`) inside the imported code.<br>
+   Specially in conjunction with a simultaniously running process specific to an institute (so, not for the main site), performed by Drush or triggered by a Crontab task, and treating author objects as well - then it may happen for intransparent reasons that some [server variables are not available](https://github.com/drush-ops/drush/issues/3562) temporarily (this may affect PHP or Drupal varaibles perhaps too).
+
 5. Go to `https://<islandora.somewhere.com>/<institute>/admin/config/workflow/rules` and import the rule `rule_to_set_cronjob_for_author_idmapping_export-<institute>.rule`.
 
 6. Test the installation as follows:
